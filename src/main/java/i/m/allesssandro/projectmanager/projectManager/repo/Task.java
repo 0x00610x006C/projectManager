@@ -1,4 +1,4 @@
-package i.m.allesssandro.projectmanager.projectManager;
+package i.m.allesssandro.projectmanager.projectManager.repo;
 
 import lombok.Getter;
 import lombok.Setter;
