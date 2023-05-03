@@ -20,8 +20,8 @@ create table if not exists "token" (
 create table if not exists "projects" (
     id identity not null,
     name varchar(255) not null,
-    parent_project bigint,
-    constraint fk_parent_project foreign key (parent_project) references "projects"(id)
+    "parent_project" bigint,
+    constraint fk_parent_project foreign key ("parent_project") references "projects"(id)
 );
 
 create table if not exists "tasks" (
