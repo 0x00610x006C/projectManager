@@ -1,4 +1,4 @@
-package i.m.allesssandro.projectmanager.projectManager;
+package i.m.allesssandro.projectmanager.projectManager.repo;
 
 import i.m.allesssandro.projectmanager.auth.repo.Token;
 import lombok.Getter;
