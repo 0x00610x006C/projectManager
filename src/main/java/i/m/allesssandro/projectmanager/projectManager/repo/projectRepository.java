@@ -12,4 +12,6 @@ public interface projectRepository extends CrudRepository<Project, Long>
 {
     @Override
     List<Project> findAll();
+
+    List<Project> findAllByParentProjectId(Long id);
 }
