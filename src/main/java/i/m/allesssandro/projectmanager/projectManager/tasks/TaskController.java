@@ -1,18 +1,12 @@
 package i.m.allesssandro.projectmanager.projectManager.tasks;
 
 import i.m.allesssandro.projectmanager.auth.repo.User;
-import i.m.allesssandro.projectmanager.auth.repo.UserRole;
-import i.m.allesssandro.projectmanager.projectManager.errors.RoleHasNoPriveleges;
-import i.m.allesssandro.projectmanager.projectManager.projects.Project;
-import i.m.allesssandro.projectmanager.projectManager.projects.ProjectManagerController;
 import i.m.allesssandro.projectmanager.projectManager.tasks.errors.IncorrectTaskType;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
+import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/user/tasks")
@@ -55,6 +49,18 @@ public class TaskController
         );
 
         return new CreateTaskResponse(task);
+    }
+
+    record GetAllTasksResponse(
+            List<Task> tasks
+    ){}
+
+    @GetMapping(value = "/all")
+    public GetAllTasksResponse getAllProjects()
+    {
+        List<Task> tasks = taskService.getAllTasks();
+
+        return new GetAllTasksResponse(tasks);
     }
 
 }

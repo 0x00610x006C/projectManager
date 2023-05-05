@@ -3,6 +3,7 @@ package i.m.allesssandro.projectmanager.projectManager.tasks;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class TaskService
@@ -26,5 +27,10 @@ public class TaskService
                 projectId);
 
         return repository.save(task);
+    }
+
+    public List<Task> getAllTasks()
+    {
+        return repository.findAll();
     }
 }
