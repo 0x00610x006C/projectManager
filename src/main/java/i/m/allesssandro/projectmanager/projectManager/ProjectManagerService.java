@@ -2,17 +2,18 @@ package i.m.allesssandro.projectmanager.projectManager;
 
 import i.m.allesssandro.projectmanager.projectManager.exceptions.ProjectNotExist;
 import i.m.allesssandro.projectmanager.projectManager.repo.Project;
-import i.m.allesssandro.projectmanager.projectManager.repo.projectRepository;
+import i.m.allesssandro.projectmanager.projectManager.repo.ProjectRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class ProjectManagerService
 {
-    private final projectRepository repository;
+    private final ProjectRepository repository;
 
-    public ProjectManagerService(projectRepository repository)
+    public ProjectManagerService(ProjectRepository repository)
     {
         this.repository = repository;
     }
@@ -27,22 +28,23 @@ public class ProjectManagerService
         return repository.save(Project.of(name, parentId));
     }
 
-    public String dropProject(Long id)
+    public List<Long> dropProject(Long id)
     {
         List<Project> children = repository.findAllByParentProjectId(id);
 
-        StringBuilder stringBuilder = new StringBuilder();
+        List<Long> subprojectIndexes = new ArrayList<>();
 
         for (Project project : children)
         {
+            //todo не забыть про удаление задач которые находятся в удаляемом проекте
             long childrenId = project.getId();
-            stringBuilder.append(dropProject(childrenId));
-            stringBuilder.append(childrenId).append(", ");
+            subprojectIndexes.addAll(dropProject(childrenId));
+            subprojectIndexes.add(childrenId);
         }
 
         repository.deleteById(id);
 
-        return stringBuilder.toString();
+        return subprojectIndexes;
     }
 
     public Project editProject(Long id, String name)
