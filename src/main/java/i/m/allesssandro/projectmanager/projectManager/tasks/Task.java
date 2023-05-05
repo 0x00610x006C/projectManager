@@ -1,6 +1,5 @@
 package i.m.allesssandro.projectmanager.projectManager.tasks;
 
-import i.m.allesssandro.projectmanager.projectManager.projects.Project;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

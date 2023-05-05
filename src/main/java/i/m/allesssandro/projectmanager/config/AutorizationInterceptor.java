@@ -1,7 +1,7 @@
 package i.m.allesssandro.projectmanager.config;
 
-import i.m.allesssandro.projectmanager.auth.service.AuthService;
 import i.m.allesssandro.projectmanager.auth.errors.NoBearerTokenError;
+import i.m.allesssandro.projectmanager.auth.service.AuthService;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
 
