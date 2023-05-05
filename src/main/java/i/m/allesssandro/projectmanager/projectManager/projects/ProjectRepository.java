@@ -1,7 +1,6 @@
-package i.m.allesssandro.projectmanager.projectManager.repo;
+package i.m.allesssandro.projectmanager.projectManager.projects;
 
 
-import i.m.allesssandro.projectmanager.projectManager.repo.Project;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 

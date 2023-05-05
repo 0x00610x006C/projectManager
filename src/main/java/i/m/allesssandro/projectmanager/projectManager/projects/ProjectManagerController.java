@@ -1,9 +1,8 @@
-package i.m.allesssandro.projectmanager.projectManager;
+package i.m.allesssandro.projectmanager.projectManager.projects;
 
 import i.m.allesssandro.projectmanager.auth.repo.User;
 import i.m.allesssandro.projectmanager.auth.repo.UserRole;
-import i.m.allesssandro.projectmanager.projectManager.exceptions.RoleHasNoPrivelege;
-import i.m.allesssandro.projectmanager.projectManager.repo.Project;
+import i.m.allesssandro.projectmanager.projectManager.errors.RoleHasNoPriveleges;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,7 +47,7 @@ public class ProjectManagerController
 
         if (!UserRole.ADMIN.equals(user.getRole()))
         {
-            throw new RoleHasNoPrivelege();
+            throw new RoleHasNoPriveleges();
         }
 
         Project project = projectManagerService.create(
@@ -74,7 +73,7 @@ public class ProjectManagerController
 
         if (!UserRole.ADMIN.equals(user.getRole()))
         {
-            throw new RoleHasNoPrivelege();
+            throw new RoleHasNoPriveleges();
         }
 
         List<Long> deletedSubprojects = projectManagerService.dropProject(deleteProjectRequest.id());
@@ -98,7 +97,7 @@ public class ProjectManagerController
 
         if (!UserRole.ADMIN.equals(user.getRole()))
         {
-            throw new RoleHasNoPrivelege();
+            throw new RoleHasNoPriveleges();
         }
 
         Project project = projectManagerService.editProject(editProjectRequest.id, editProjectRequest.name());

@@ -1,8 +1,6 @@
-package i.m.allesssandro.projectmanager.projectManager;
+package i.m.allesssandro.projectmanager.projectManager.projects;
 
-import i.m.allesssandro.projectmanager.projectManager.exceptions.ProjectNotExist;
-import i.m.allesssandro.projectmanager.projectManager.repo.Project;
-import i.m.allesssandro.projectmanager.projectManager.repo.ProjectRepository;
+import i.m.allesssandro.projectmanager.projectManager.projects.errors.ProjectNotExist;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
