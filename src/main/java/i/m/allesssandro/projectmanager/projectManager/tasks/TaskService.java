@@ -45,4 +45,32 @@ public class TaskService
 
         return repository.save(task);
     }
+
+    public Task editTask(Long id, String name, String newType, String newStatus)
+    {
+        Task task = repository.findById(id)
+                .orElseThrow(TaskNotExist::new);
+
+        task.setName(name);
+        task.setStatus(TaskStatus.valueOf(newStatus));
+        task.setType(TaskType.valueOf(newType));
+        task.setChangedAt(LocalDateTime.now());
+
+        return repository.save(task);
+    }
+
+    public Long getAuthor(Long taskId)
+    {
+        Task task = repository.findById(taskId)
+                .orElseThrow(TaskNotExist::new);
+
+        return task.getAuthor();
+    }
+
+    public Long dropProject(Long id)
+    {
+        repository.deleteById(id);
+
+        return id;
+    }
 }

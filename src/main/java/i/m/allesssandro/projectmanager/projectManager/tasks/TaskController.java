@@ -1,12 +1,15 @@
 package i.m.allesssandro.projectmanager.projectManager.tasks;
 
 import i.m.allesssandro.projectmanager.auth.repo.User;
-import i.m.allesssandro.projectmanager.projectManager.tasks.errors.IncorrectTaskType;
+import i.m.allesssandro.projectmanager.auth.repo.UserRole;
+import i.m.allesssandro.projectmanager.projectManager.errors.RoleHasNoPriveleges;
+import i.m.allesssandro.projectmanager.projectManager.tasks.errors.IncorrectTaskField;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Function;
 
 @RestController
 @RequestMapping(value = "/api/user/tasks")
@@ -34,12 +37,7 @@ public class TaskController
     {
         User user = (User) request.getAttribute("user");
 
-        if (Arrays.stream(TaskType.values())
-                .map(TaskType::toString)
-                .noneMatch(createTaskRequest.type()::equals))
-        {
-            throw new IncorrectTaskType();
-        }
+        checkEnumValue(TaskType.values(), TaskType::toString, createTaskRequest.type());
 
         Task task = taskService.create(
                 createTaskRequest.name(),
@@ -64,7 +62,7 @@ public class TaskController
     }
 
     record EditTaskStatusRequest(
-            String newStatus,
+            String status,
             Long id
     ) {}
 
@@ -73,22 +71,84 @@ public class TaskController
     ) {}
 
 
-    @PatchMapping(value = "/edit")
+    @PatchMapping(value = "/editStatus")
     public EditTaskStatusResponse editProject(@RequestBody EditTaskStatusRequest editTaskStatusRequest)
     {
-        if (Arrays.stream(TaskStatus.values())
-                .map(TaskStatus::toString)
-                .noneMatch(editTaskStatusRequest.newStatus()::equals))
-        {
-            throw new IncorrectTaskType();
-        }
+        checkEnumValue(TaskStatus.values(), TaskStatus::toString, editTaskStatusRequest.status());
 
         Task task = taskService.editStatus(
-                editTaskStatusRequest.newStatus(),
+                editTaskStatusRequest.status(),
                 editTaskStatusRequest.id()
         );
 
         return new EditTaskStatusResponse(task);
     }
 
+    record EditTaskRequest(
+            Long id,
+            String name,
+            String type,
+            String status
+    ) {}
+
+    record EditTaskResponse (
+            Task task
+    ) {}
+
+    @PatchMapping(value = "/edit")
+    public EditTaskResponse editProject(HttpServletRequest request, @RequestBody EditTaskRequest editTaskRequest)
+    {
+        User user = (User) request.getAttribute("user");
+
+        if (!UserRole.ADMIN.equals(user.getRole()))
+        {
+            throw new RoleHasNoPriveleges();
+        }
+
+        checkEnumValue(TaskType.values(), TaskType::toString, editTaskRequest.type());
+
+        checkEnumValue(TaskStatus.values(), TaskStatus::toString, editTaskRequest.status());
+
+        Task task = taskService.editTask(editTaskRequest.id(),
+                editTaskRequest.name(),
+                editTaskRequest.type(),
+                editTaskRequest.status());
+
+        return new EditTaskResponse(task);
+    }
+
+    record DeleteTaskRequest (
+            Long id
+    ) {}
+
+    record DeleteTaskResponse (
+            Long id
+    ) {}
+
+
+    @DeleteMapping(value = "/drop")
+    public DeleteTaskResponse deleteProject(HttpServletRequest request, @RequestBody DeleteTaskRequest deleteTaskRequest)
+    {
+        User user = (User) request.getAttribute("user");
+
+        if (!UserRole.ADMIN.equals(user.getRole()) || !taskService.getAuthor(deleteTaskRequest.id()).equals(user.getId()))
+        {
+            throw new RoleHasNoPriveleges();
+        }
+
+        Long id = taskService.dropProject(deleteTaskRequest.id());
+
+        return new DeleteTaskResponse(id);
+    }
+
+
+    private <T extends Enum<T>> void checkEnumValue(T[] enumValues, Function<T, String> mapFunc, String value)
+    {
+        if (Arrays.stream(enumValues)
+                .map(mapFunc)
+                .noneMatch(value::equals))
+        {
+            throw new IncorrectTaskField(value);
+        }
+    }
 }
