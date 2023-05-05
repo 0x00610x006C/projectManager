@@ -64,7 +64,7 @@ public class ProjectManagerController
     ) {}
 
     record DeleteProjectResponse (
-            String deletedIndexes
+            List<Long> deletedSubprojects
     ) {}
 
     @DeleteMapping(value = "/drop")
@@ -77,9 +77,9 @@ public class ProjectManagerController
             throw new RoleHasNoPrivelege();
         }
 
-        String deletedIndexes = projectManagerService.dropProject(deleteProjectRequest.id());
+        List<Long> deletedSubprojects = projectManagerService.dropProject(deleteProjectRequest.id());
 
-        return new DeleteProjectResponse(deletedIndexes);
+        return new DeleteProjectResponse(deletedSubprojects);
     }
 
     record EditProjectRequest(
