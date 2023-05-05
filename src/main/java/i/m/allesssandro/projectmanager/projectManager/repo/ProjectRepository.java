@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface projectRepository extends CrudRepository<Project, Long>
+public interface ProjectRepository extends CrudRepository<Project, Long>
 {
     @Override
     List<Project> findAll();
