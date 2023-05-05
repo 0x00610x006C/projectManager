@@ -63,4 +63,32 @@ public class TaskController
         return new GetAllTasksResponse(tasks);
     }
 
+    record EditTaskStatusRequest(
+            String newStatus,
+            Long id
+    ) {}
+
+    record EditTaskStatusResponse (
+            Task task
+    ) {}
+
+
+    @PatchMapping(value = "/edit")
+    public EditTaskStatusResponse editProject(@RequestBody EditTaskStatusRequest editTaskStatusRequest)
+    {
+        if (Arrays.stream(TaskStatus.values())
+                .map(TaskStatus::toString)
+                .noneMatch(editTaskStatusRequest.newStatus()::equals))
+        {
+            throw new IncorrectTaskType();
+        }
+
+        Task task = taskService.editStatus(
+                editTaskStatusRequest.newStatus(),
+                editTaskStatusRequest.id()
+        );
+
+        return new EditTaskStatusResponse(task);
+    }
+
 }

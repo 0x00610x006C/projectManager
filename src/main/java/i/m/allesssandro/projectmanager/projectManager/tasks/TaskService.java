@@ -1,5 +1,6 @@
 package i.m.allesssandro.projectmanager.projectManager.tasks;
 
+import i.m.allesssandro.projectmanager.projectManager.tasks.errors.TaskNotExist;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -32,5 +33,16 @@ public class TaskService
     public List<Task> getAllTasks()
     {
         return repository.findAll();
+    }
+
+    public Task editStatus(String newStatus, Long id)
+    {
+        Task task = repository.findById(id)
+                .orElseThrow(TaskNotExist::new);
+
+        task.setStatus(TaskStatus.valueOf(newStatus));
+        task.setChangedAt(LocalDateTime.now());
+
+        return repository.save(task);
     }
 }
