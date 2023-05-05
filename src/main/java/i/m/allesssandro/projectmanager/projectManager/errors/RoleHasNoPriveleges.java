@@ -3,9 +3,9 @@ package i.m.allesssandro.projectmanager.projectManager.errors;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
-public class RoleHasNoPrivelege extends ResponseStatusException
+public class RoleHasNoPriveleges extends ResponseStatusException
 {
-    public RoleHasNoPrivelege()
+    public RoleHasNoPriveleges()
     {
         super(HttpStatus.BAD_REQUEST, "invalid role");
     }
