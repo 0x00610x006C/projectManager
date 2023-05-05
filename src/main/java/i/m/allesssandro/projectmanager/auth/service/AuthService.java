@@ -1,21 +1,22 @@
 package i.m.allesssandro.projectmanager.auth.service;
 
-import i.m.allesssandro.projectmanager.auth.repo.Token;
-import i.m.allesssandro.projectmanager.auth.repo.User;
-import i.m.allesssandro.projectmanager.auth.repo.UserRepository;
-import i.m.allesssandro.projectmanager.auth.repo.UserRole;
+import i.m.allesssandro.projectmanager.auth.repo.*;
 import i.m.allesssandro.projectmanager.auth.errors.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.relational.core.conversion.DbActionExecutionException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.Objects;
 
 @Service
 public class AuthService
 {
     private final UserRepository userRepository;
+
+    private final TokenRepository tokenRepository;
 
     private final PasswordEncoder passwordEncoder;
 
@@ -24,6 +25,7 @@ public class AuthService
     private final String refreshSecret;
 
     public AuthService(UserRepository userRepository,
+                       TokenRepository tokenRepository,
                        PasswordEncoder passwordEncoder,
                        @Value("${application.security.access-token-secret}")
                                String accessSecret,
@@ -31,6 +33,7 @@ public class AuthService
                                String refreshSecret)
     {
         this.userRepository = userRepository;
+        this.tokenRepository = tokenRepository;
         this.passwordEncoder = passwordEncoder;
         this.accessSecret = accessSecret;
         this.refreshSecret = refreshSecret;
@@ -104,8 +107,15 @@ public class AuthService
 
     public User getUserFromToken(String token)
     {
-        return userRepository.findById(Jwt.from(token, accessSecret))
+        User user = userRepository.findById(Jwt.from(token, accessSecret))
                 .orElseThrow(UserNotFoundError::new);
+
+        tokenRepository.findByUserName(user.getId())
+                .stream()
+                .max(Comparator.comparingLong(Token::getId))
+                .orElseThrow(UnauthenticatedError::new);
+
+        return user;
     }
 
 }
