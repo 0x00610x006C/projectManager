@@ -29,10 +29,10 @@ create table if not exists "tasks" (
     name varchar(255) not null,
     type varchar(7) not null,
     status varchar(8) not null,
-    parent_project bigint not null,
+    "parent_project" bigint not null,
     changed_at datetime not null,
     created_at datetime not null,
     author bigint not null,
-    constraint fk_task_to_project foreign key (parent_project) references "projects"(id),
+    constraint fk_task_to_project foreign key ("parent_project") references "projects"(id),
     constraint fk_task_to_users foreign key (author) references "users"(id)
 );
