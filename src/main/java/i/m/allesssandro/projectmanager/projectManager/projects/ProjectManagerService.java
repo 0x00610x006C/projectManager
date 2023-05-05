@@ -1,6 +1,8 @@
 package i.m.allesssandro.projectmanager.projectManager.projects;
 
 import i.m.allesssandro.projectmanager.projectManager.projects.errors.ProjectNotExist;
+import i.m.allesssandro.projectmanager.projectManager.tasks.Task;
+import i.m.allesssandro.projectmanager.projectManager.tasks.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -9,48 +11,66 @@ import java.util.List;
 @Service
 public class ProjectManagerService
 {
-    private final ProjectRepository repository;
+    private final ProjectRepository projectRepository;
 
-    public ProjectManagerService(ProjectRepository repository)
+    private final TaskRepository taskRepository;
+
+    public ProjectManagerService(ProjectRepository projectRepository, TaskRepository taskRepository)
     {
-        this.repository = repository;
+        this.projectRepository = projectRepository;
+        this.taskRepository = taskRepository;
     }
 
     public List<Project> getAllProjects()
     {
-        return repository.findAll();
+        return projectRepository.findAll();
     }
 
     public Project create(String name, Long parentId)
     {
-        return repository.save(Project.of(name, parentId));
+        return projectRepository.save(Project.of(name, parentId));
     }
 
-    public List<Long> dropProject(Long id)
+    public List<DeletedProject> dropProject(Long id)
     {
-        List<Project> children = repository.findAllByParentProjectId(id);
+        DeletedProject deletedProject = new DeletedProject(id, dropTasks(id));
 
-        List<Long> subprojectIndexes = new ArrayList<>();
+        List<Project> children = projectRepository.findAllByParentProjectId(id);
 
-        for (Project project : children)
+        List<DeletedProject> deletedSubprojects = new ArrayList<>(List.of(deletedProject));
+
+        for (Project child : children)
         {
-            //todo не забыть про удаление задач которые находятся в удаляемом проекте
-            long childrenId = project.getId();
-            subprojectIndexes.addAll(dropProject(childrenId));
-            subprojectIndexes.add(childrenId);
+            deletedSubprojects.addAll(dropProject(child.getId()));
         }
 
-        repository.deleteById(id);
+        projectRepository.deleteById(id);
 
-        return subprojectIndexes;
+        return deletedSubprojects;
+    }
+
+    private List<Long> dropTasks(Long id)
+    {
+        List<Task> tasks = taskRepository.findAllByParentProjectId(id);
+
+        List<Long> listOfDeletedTaskId = new ArrayList<>();
+
+        for (Task task : tasks)
+        {
+            long taskId = task.getId();
+            taskRepository.deleteById(taskId);
+            listOfDeletedTaskId.add(taskId);
+        }
+
+        return listOfDeletedTaskId;
     }
 
     public Project editProject(Long id, String name)
     {
-        Project project = repository.findById(id).orElseThrow(ProjectNotExist::new);
+        Project project = projectRepository.findById(id).orElseThrow(ProjectNotExist::new);
 
         project.setName(name);
 
-        return repository.save(project);
+        return projectRepository.save(project);
     }
 }
