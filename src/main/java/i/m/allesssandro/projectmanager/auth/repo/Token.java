@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 public class Token
 {
     @Id
+    @Getter
+    @Setter
     private Long id;
 
     @Getter
