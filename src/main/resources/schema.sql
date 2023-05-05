@@ -32,5 +32,7 @@ create table if not exists "tasks" (
     parent_project bigint not null,
     changed_at datetime not null,
     created_at datetime not null,
-    constraint fk_task_to_project foreign key (parent_project) references "projects"(id)
+    author bigint not null,
+    constraint fk_task_to_project foreign key (parent_project) references "projects"(id),
+    constraint fk_task_to_users foreign key (author) references "users"(id)
 );
